@@ -1,0 +1,10 @@
+La résolution d'un problème de planification revient généralement
+à :
+1) Décrire l'ensemble des situations possibles d'un problème, ce qui
+revient à choisir une représentation des états.
+2) définir l'espace d'états G=(V,E) du problème, ce qui implique
+de définir un système de production pour se déplacer dans
+l'espace, c'est-à-dire pour passer d'un état à un autre.
+3) définir l'état initial et un ou des états finaux
+4) élaborer/choisir une stratégie de résolution pour obtenir une
+solution, pour nous ce sera l'algo AlphaBeta pour choisir le meilleur coup.
