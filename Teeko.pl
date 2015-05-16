@@ -1,63 +1,49 @@
 /* Teeko.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
 
-/*-------------------- BOARD ------------------------------------------------------------------------*/
+/*---------------------------- Player vs Player/AI -------------------------------------*/
+:- consult('AI.pl'). % inclusion du fichier AI.pl
+:- dynamic pawnPosition/3.
 
-I : raw
-J : column
-
-I\J| 1 | 2 | 3 | 4 | 5 |
-  1|
-  2|
-  3|
-  4|
-  5|
-
-
-/*------------------- Player vs Player -----------------------------------------------------------------------------*/
 %Definition of players. predicat player(-X, ?Y). with X, Y are elements.
-player('R', 'red').
-player('B', 'black').
+player('B', 'Black player').
+player('R', 'Red player').
+
+%Check I, J between 1 and 5. 
+checkBetween(_, I, J):- MIN is 1, MAX is 5, between(MIN, MAX, I), between(MIN, MAX, J).
+
+%Pawn coordinates I, J. Predicat dynamic up grade each move.
+pawnPosition('B1', I, J).
+pawnPosition('B2', I, J).
+pawnPosition('B3', I, J).
+pawnPosition('B4', I, J).
+pawnPosition('R1', I, J).
+pawnPosition('R2', I, J).
+pawnPosition('R3', I, J).
+pawnPosition('R4', I, J).
 
 %Definition of list of players' pawn. predicat pawn(-X, ?PawnList). with X is element, L is List.
-pawn('R', [R1, R2, R3, R4]).
-pawn('B', [B1, B2, B3, B4]).
-
-%Return postion of a pawn. predicat pawnPosition(+Pawn, ?PawnList, -I, -J)
-pawnPosition(_, [], _, _). %condition d'arret
-pawnPosition(Pawn, [Pawn|R] I, J).
-pawnPosition(Pawn, [_|R] I, J):- pawnPosition(Pawn, R, I, J).
-
-%Return postion of all pawn of a player. predicat pawnPositionPlayer(+P, -I, -J).
-%pawnsPositionPlayer([| R]):-pawn(X, L).
+pawnList('B', ['B1', 'B2', 'B3', 'B4']).
+pawnList('R', ['R1', 'R2', 'R3', 'R4']).
 
 %Return the next player who will play. predicat nextPlayer(+X, -Y), X and Y elements.
 nextPlayer(X, Y):- player(Y, _), not(Y = X).
 
-%Ajoute pion dans la case. predicat takenSquare(+I, +J, ?L).
-addPawnOnBoard( I, J, [_|[I, J]]).
+%Return if combo of pawn is win combo
+winner().
 
-%Verifie si la case est occupée. pediacat allowedMove(+I, +J). si n'est pas membre alors case pas occupé, coup autorisé
-takenSquare(I, J):- takenSquare(_, _, L1), not(member([I,J], L1)).
+%Return last element of PawnList
+lastPawn(Player, Pawn) :- pawn(Player, PawnList), haveNoCoord(PawnList, Pawn).
 
-%Coup autorisé
-allowedMove(I, J):- I <= 4, I >= 4.
+%Return the pawn of pawnlist haven't got yet coordonates
+haveNoCoord([P|_], P) :- not(pawnPosition(P,_,_)), !.
+haveNoCoord([T|R], P) :- pawnPosition(T,_,_), haveNoCoord(R, P).
 
+%Set marker on board
+setOnBoard(Pawn, I, J) :- nonvar(Pawn), nonvar(I), nonvar(J), calcSet(Pawn, I, J), assertz(pawnPosition(Pawn, I, J)), !.
 
-/*------------------ STAGE 1 : Put each pawn ---------------------------------------------------------------------*/
-
-%Premier tour, chaque joueur pose ses pions. initBoard(-Player, +I, +J, ?PawnList).
-initBoard(Player, I, J, L):-initBoard(Player, I, J, L, 8).
-initBoard(_, _, _, _, 0). % condition d'arret
-initBoard(Player, I, J, L, N):- N1 is N-1, player(Player, _), pawn( Player, L), takenSquare(I, J), addPawnOnBoard(I, J, _), nextPlayer(nextP, Player), initBoard(nextP, I, J, L, N1).
-
-
-/*------------------ STAGE 2 : Move each pawn until own a win combo ----------------------------------------*/
-
-% Tour par tour. turnBased(-Player, +Pawn, +I, +J).
-turnBased(Player, Pawn, I, J, ).
+%Unset marker off board
+unsetOffBoard(Pawn) :- nonvar(Pawn), pawnPosition(Pawn, I, J), retract(pawnPosition(Pawn, I, J)), !.
 
 
 
-/*------------------ Player vs AI ------------------------------------------------------------------------------*/
-/* Algo MinMax with elagage AlphaBeta*/
 
