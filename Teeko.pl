@@ -8,18 +8,18 @@
 player('B', 'Black player').
 player('R', 'Red player').
 
-%Check I, J between 1 and 5. 
-checkBetween(_, I, J):- MIN is 1, MAX is 5, between(MIN, MAX, I), between(MIN, MAX, J).
+%Check A is between 1 and 25. 
+checkBetween(_, A):- MIN is 1, MAX is 25, between(MIN, MAX, A).
 
 %Pawn coordinates I, J. Predicat dynamic up grade each move.
-pawnPosition('B1', I, J).
-pawnPosition('B2', I, J).
-pawnPosition('B3', I, J).
-pawnPosition('B4', I, J).
-pawnPosition('R1', I, J).
-pawnPosition('R2', I, J).
-pawnPosition('R3', I, J).
-pawnPosition('R4', I, J).
+pawnPosition('B1', A1).
+pawnPosition('B2', A2).
+pawnPosition('B3', A3).
+pawnPosition('B4', A4).
+pawnPosition('R1', A1).
+pawnPosition('R2', A2).
+pawnPosition('R3', A3).
+pawnPosition('R4', A4).
 
 %Definition of list of players' pawn. predicat pawn(-X, ?PawnList). with X is element, L is List.
 pawnList('B', ['B1', 'B2', 'B3', 'B4']).
@@ -29,21 +29,22 @@ pawnList('R', ['R1', 'R2', 'R3', 'R4']).
 nextPlayer(X, Y):- player(Y, _), not(Y = X).
 
 %Return if combo of pawn is win combo
-winner().
+winner('B') :-pawnPosition('B1', BA1), pawnPosition('B2', BA2), pawnPosition('B3', BA3), pawnPosition('B4', BA4), winner(BA1, BA2, BA3, BA4), !.
+winner('R') :-pawnPosition('R1', RA1), pawnPosition('R2', RA2), pawnPosition('R3', RA3), pawnPosition('B4', RA4), winner(RA1, RA2, RA3, RA4), !.
 
 %Return last element of PawnList
-lastPawn(Player, Pawn) :- pawn(Player, PawnList), haveNoCoord(PawnList, Pawn).
+lastPawn(Player, Pawn) :- pawn(Player, PawnList), haveNoPos(PawnList, Pawn).
 
 %Return the pawn of pawnlist haven't got yet coordonates
-haveNoCoord([P|_], P) :- not(pawnPosition(P,_,_)), !.
-haveNoCoord([T|R], P) :- pawnPosition(T,_,_), haveNoCoord(R, P).
+haveNoPos([P|_], P) :- not(pawnPosition(P,_,_)), !.
+haveNoPos([T|R], P) :- pawnPosition(T,_,_), haveNoPos(R, P).
 
 %Set marker on board
-setOnBoard(Pawn, I, J) :- nonvar(Pawn), nonvar(I), nonvar(J), calcSet(Pawn, I, J), assertz(pawnPosition(Pawn, I, J)), !.
+setOnBoard(Pawn, A) :- nonvar(Pawn), nonvar(A), calcSet(Pawn, A), assertz(pawnPosition(Pawn, A)), !.
 
 %Unset marker off board
-unsetOffBoard(Pawn) :- nonvar(Pawn), pawnPosition(Pawn, I, J), retract(pawnPosition(Pawn, I, J)), !.
+unsetOffBoard(Pawn) :- nonvar(Pawn), pawnPosition(Pawn, A), retract(pawnPosition(Pawn, A)), !.
 
-
+calcSet().
 
 
