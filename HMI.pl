@@ -61,7 +61,7 @@ addPosPawn(Pawn):- nl, writeln(' Unavailable position. Try again !'), addCoordPa
 checkPos(_, N):- between()1, 25, N), !. % check position add by the player
 checkPos(Pawn, N):- write('Error position. Try again ! (dont forget the . )'), addPosPawn(Pawn). % else return to addPosPawn
 
-% stage2: prediact allows stage 2 if all pawns are set on board.
+% stage2: predicat allows stage 2 if all pawns are set on board.
 stage2:- not(lastPawn('B', _)), not(lastPawn('R', _)), !, not(winner('B')), not(winner('R')).
 
 /*----------------------------- GAME STAGE 2 : Move pawns -----------------------------------------*/
