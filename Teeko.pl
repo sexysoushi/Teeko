@@ -8,8 +8,10 @@
 player('B', 'Black player').
 player('R', 'Red player').
 
-%Check A is between 1 and 25. 
-checkBetween(_, A):- MIN is 1, MAX is 25, between(MIN, MAX, A).
+%Check elem of list are between 1 and 25. 
+checkBetween([], _, _).
+checkBetween([T|R]):- between(1, 25, T), checkBetween(R).
+
 
 %Pawn coordinates I, J. Predicat dynamic up grade each move.
 pawnPosition('B1', A1).
@@ -31,6 +33,37 @@ nextPlayer(X, Y):- player(Y, _), not(Y = X).
 %Return if combo of pawn is win combo
 winner('B') :-pawnPosition('B1', BA1), pawnPosition('B2', BA2), pawnPosition('B3', BA3), pawnPosition('B4', BA4), winner(BA1, BA2, BA3, BA4), !.
 winner('R') :-pawnPosition('R1', RA1), pawnPosition('R2', RA2), pawnPosition('R3', RA3), pawnPosition('B4', RA4), winner(RA1, RA2, RA3, RA4), !.
+% by raw
+winner(A1, A2, A3, A4):- permutation([A1, A2, A3, A4], [PA1, PA2, PA3, PA4]), checkBetween([PA1, PA2, PA3, PA4]), neighborRaw(L, [PA1, PA2, PA3, PA4]), !.
+% by column
+winner(A1, A2, A3, A4):- permutation([A1, A2, A3, A4], [PA1, PA2, PA3, PA4]), checkBetween([PA1, PA2, PA3, PA4]), neighborColumn(L, [PA1, PA2, PA3, PA4]), !.
+% by diagnal up
+winner(A1, A2, A3, A4):- permutation([A1, A2, A3, A4], [PA1, PA2, PA3, PA4]), checkBetween([PA1, PA2, PA3, PA4]), neighborDiagonalUp(L, [PA1, PA2, PA3, PA4]), !.
+% by diagonal down
+winner(A1, A2, A3, A4):- permutation([A1, A2, A3, A4], [PA1, PA2, PA3, PA4]), checkBetween([PA1, PA2, PA3, PA4]), neighborDiagonalDown(L, [PA1, PA2, PA3, PA4]), !.
+
+%Check if pawns are on a same win raw
+neighborRaw().
+neighborRaw([L|R1], [T|R2]):- rawList([L|R1]), member(T, L), !, allInList(L, R2).
+neighborRaw([L|R1], [T|R2]):- rawList([L|R1]), neighborRaw(R1, T).
+
+%Check if pawns are on a same win column
+neighborColumn().
+neighborColumn([L|R1], [T|R2]):- columnList([L|R1]), member(T, L), !, allInList(L, R2).
+neighborColumn([L|R1], [T|R2]):- columnList([L|R1]), neighborColumn(R1, T).
+
+%Check if pawns are on a same win diagonal up
+neighborDiagonalUp().
+neighborDiagonalUp([L|R1], [T|R2]):- diagUpList([L|R1]), member(T, L), !, allInList(L, R2).
+neighborDiagonalUp([L|R1], [T|R2]):- diagUpList([L|R1]), neighborDiagonalUp(R1, T).
+
+%Check if pawns are on a same win diagonal down
+neighborDiagonalDown().
+neighborDiagonalDown([L|R1], [T|R2]):- diagDownList([L|R1]), member(T, L), !, allInList(L, R2).
+neighborDiagonalDown([L|R1], [T|R2]):- diagDownList([L|R1]), neighborDiagonalDown(R1, T).
+
+%Check all pawn in a list
+allInList(L, [T|R]):- member(T, L), allInList(L, R).
 
 %Return last element of PawnList
 lastPawn(Player, Pawn) :- pawn(Player, PawnList), haveNoPos(PawnList, Pawn).

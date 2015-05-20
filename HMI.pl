@@ -51,7 +51,8 @@ stage2:- not(lastPawn('B', _)), not(lastPawn('R', _)), !, not(winner('B')), not(
 /*----------------------------- GAME STAGE 2 : Move pawns -----------------------------------------*/
 
 
+
 /*----------------------------- END OF GAME : haveAWinner -----------------------------------------*/
 
 haveAWinner(Player, 'human'):- writeln(' We have a winner !!'), player(Player, Name), write(Name), writeln(' won this game !').
-haveAWinner(Player, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah').
+haveAWinner(Player, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah ;)').
