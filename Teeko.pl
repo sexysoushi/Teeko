@@ -9,11 +9,10 @@ player('B', 'Black player').
 player('R', 'Red player').
 
 %Check elem of list are between 1 and 25. 
-checkBetween([], _, _).
+checkBetween([]).
 checkBetween([T|R]):- between(1, 25, T), checkBetween(R).
 
-
-%Pawn coordinates I, J. Predicat dynamic up grade each move.
+%Pawn coordinates A. Predicat dynamic up grade each move.
 pawnPosition('B1', A1).
 pawnPosition('B2', A2).
 pawnPosition('B3', A3).
@@ -68,7 +67,7 @@ allInList(L, [T|R]):- member(T, L), allInList(L, R).
 %Return last element of PawnList
 lastPawn(Player, Pawn) :- pawn(Player, PawnList), haveNoPos(PawnList, Pawn).
 
-%Return the pawn of pawnlist haven't got yet coordonates
+%Return the pawn of pawnlist haven't got yet position
 haveNoPos([P|_], P) :- not(pawnPosition(P,_,_)), !.
 haveNoPos([T|R], P) :- pawnPosition(T,_,_), haveNoPos(R, P).
 
@@ -78,6 +77,5 @@ setOnBoard(Pawn, A) :- nonvar(Pawn), nonvar(A), calcSet(Pawn, A), assertz(pawnPo
 %Unset marker off board
 unsetOffBoard(Pawn) :- nonvar(Pawn), pawnPosition(Pawn, A), retract(pawnPosition(Pawn, A)), !.
 
-calcSet().
-
-
+% if position is available
+calcSet(Pawn, A) :- between(1, 25, A), not(pawnPosition(_, A)), not(pawnPosition(Pawn, _)).
