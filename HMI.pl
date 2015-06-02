@@ -1,17 +1,5 @@
 /* HMI.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
 
-/*------------------------------------------- BOARD design ---------------------------------------------
-
-| A1  | A2  | A3  | A4  | A5  |
-_______________________________
-| A6  | A7  | A8  | A9  | A10 |
-_______________________________
-| A11 | A12 | A13 | A14 | A15 |
-_______________________________
-| A16 | A17 | A18 | A19 | A20 |
-_______________________________
-| A21 | A22 | A23 | A24 | A25 |
-
 -------------------------------------- Game Initialisation & GAME MODE ---------------------------------------*/
 
 :- consult('Teeko.pl'). % inclusion of file teeko.pl
@@ -100,4 +88,4 @@ movePawn(Player, 'human', NextPlayer):- player(Player, Name), write(Name), write
 haveAWinner(Player, 'human'):- writeln(' We have a winner !!'), player(Player, Name), write(Name), writeln(' won this game !').
 haveAWinner(Player, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah ;)').
 
-:- HMI.
+:- hMI.
