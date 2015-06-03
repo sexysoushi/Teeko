@@ -1,6 +1,14 @@
 /* Teeko.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
 :- consult('AI.pl'). % inclusion of file AI.pl
 
+/* Prolog function use */
+%between(+Low, +High, ?Value)
+%not(:Goal)
+%nonvar(@Term) : True if Term currently is not a free variable.
+%assertz(+Term)
+%retract(+Term)
+%member(?Elem, ?List)
+
 /*------------------------------------------- BOARD design ---------------------------------------------
 
 | A1  | A2  | A3  | A4  | A5  |
@@ -12,6 +20,17 @@ _______________________________
 | A16 | A17 | A18 | A19 | A20 |
 _______________________________
 | A21 | A22 | A23 | A24 | A25 |
+
+Move available on board:
+Always between 1:25 (board side)
+Pos - 6
+Pos - 5
+Pos - 4
+Pos - 1
+Pos + 1
+Pos + 4
+Pos + 5
+Pos + 6
 
  -------------------------------------------------------------------------------------------------------*/
  
@@ -166,3 +185,28 @@ unsetOffBoard(Pawn) :- nonvar(Pawn), pawnPosition(Pawn, A), retract(pawnPosition
 
 % if position is available
 calcSet(Pawn, A) :- between(1, 25, A), not(pawnPosition(_, A)), not(pawnPosition(Pawn, _)).
+
+%calcAllSet : calculate all positions available to set a marker and check if the marker is the first which can be set
+calcAllSet(Player, Pawn, A) :- lastPawn(Player, Pawn), calcSet('NE', Pawn).
+
+%moveOnBoard : Move pawn to nex position and retract the last position
+moveOnBoard(Pawn, A) :- pawnPosition(Pawn, FromA), calcMove(Pawn, ToA), assert(pawnPosition(Pawn, ToA)), retract(pawnPosition(Pawn, FromA)), !.
+
+%calcAllMove : calculate all moves available for all pawns
+calcAllMove(Player, Pawn, ToA) :- pawnList(Player, PawnList), member(Pawn, PawnList), calcMove(Pawn, ToA).
+/*
+%calcMove for M
+calcMove(Pawn, ToA):- pawnPosition(Pawn, FromA),
+				between(1, 25, ToA),
+				between(4, 6, Val)
+
+
+inRange([TOX, TOY], 1, 5),
+    MAXX is FROMX + 1, MINX is FROMX - 1, inRange([TOX], MINX, MAXX),
+    MAXY is FROMY + 1, MINY is FROMY - 1, inRange([TOY], MINY, MAXY),
+    sdif(TOX, FROMX, TOY, FROMY),
+    not(pawnPosition(_, ToA)).
+*/
+%calcAll : calculate all moves/set depending on phase
+calcAll(Player, Pawn, A) :- lastPawn(Player, Pawn), calcAllSet(Player, Pawn, A).
+calcAll(Player, Pawn, A) :- not(lastPawn(Player, Pawn)), calcAllMove(Player, Pawn, A).

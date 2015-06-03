@@ -1,9 +1,23 @@
 /* HMI.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
 
+/* Prolog function use */
+%between(+Low, +High, ?Value)
+%get(-Char)
+%assertz(+Term)
+%retract(+Term)
+%findall(+Template, :Goal, -Bag)
+%not(:Goal)
+%name(?Atomic, ?CodeList)
+%halt
+%writeln(X)
+%read(-Char)
+%nl
+
 -------------------------------------- Game Initialisation & GAME MODE ---------------------------------------*/
 
 :- consult('Teeko.pl'). % inclusion of file teeko.pl
 :- dynamic playerType/2. % dynamic predicat, if player is a human or ai
+:- dynamic choseAiLevel/1. % ai level mode
 
 init:- writeln('TEEKO GAME - The best AI game to infinity and beyond...'),
 	writeln('Haha, welcome ! I am Jarvis, this AI Computer.'), nl.
@@ -16,13 +30,23 @@ choseMode:- writeln('What would you like to do ?'),
         writeln('3. Quit the application'),
         get(Mode), nl, name(Choice, [Mode]), applyMode(Choice), !.
 
-applyMode(1):- resetAll, assert(playerType('B', 'human')), assert(playerType('R', 'human')), writeln('Ok. Have fun together. Player black begin !'), nl, !,
+applyMode(1):- resetAll, assertz(playerType('B', 'human')), assertz(playerType('R', 'human')), writeln('Ok. Have fun together. Player black begin !'), nl, !,
 			launchGame.
-applyMode(2):- resetAll, assert(playerType('B', 'human')), assert(playerType('R', 'ai')), writeln('Hahaha, really ? Ok. You begin.'), nl, !,
-			launchGame.
+applyMode(2):- resetAll, assertz(playerType('B', 'human')), assertz(playerType('R', 'ai')), writeln('Hahaha, really ? Ok.'), nl, !,
+			choseAiLevel, launchGame.
 applyMode(3):- writeln('See you soon buddy !'), halt, !.
 applyMode(_):- writeln('Error input'), nl, choseMode.
-		
+				
+% choseDifficult of AI Computer
+choseAiLevel:- writeln('I let you choose the difficulty level of my AI :'), writeln('1. EASY'), writeln('2. MEDIUM'), writeln('3. HARD'),
+        get(LevelChr), nl, nl, name(Level, [LevelChr]), applyLevelChose(Level), writeln('Its your turn to begin !').
+
+% applyLevelChose: apply Level Chose for AI Computer
+applyLevelChose(1):- assert(choseAiLevel(1)).
+applyLevelChose(2):- assert(choseAiLevel(2)).
+applyLevelChose(3):- assert(choseAiLevel(3)).
+applyLevelChose(_):- writeln('Error.'), nl, choseAiLevel.
+
 % launch the game
 launchGame:- board, nl, nl, % board display
         writeln('Ready ? 3, 2, 1... Let s go !'),
@@ -32,13 +56,17 @@ launchGame:- board, nl, nl, % board display
 resetPlayerType:- playerType('B', BType), playerType('R', RType), retract(playerType('B', BType)), retract(playerType('R', RType)).
 resetPlayerType:- !.
 
+% resetaiLevel: reset dynamic predicat of choseAiLevel
+resetChoseAiLevel:- choseAiLevel(Level), !, choseAiLevel(aiLevel(Level)).
+resetChoseAiLevel:- !.
+
 % resetPawn: reset all pawns (dynamic predicat)
 resetPawn:- findall(Pawn, positionPawn(Pawn, _), PawnList), resetPawn(PawnList).
 resetPawn([]):- !.
 resetPawn([T|R]):- unset(T), resetPawn(R), !.
 
 % resetAll
-resetAll:- resetPlayerType, resetPawn, clearboard.
+resetAll:- resetPlayerType, resetChoseAiLevel, resetPawn, clearboard.
 
 /*----------------------------- BOARD DISPLAY -----------------------------------------*/
 
@@ -56,7 +84,7 @@ set(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner
 % Player set a pawn, and turn to NextPlayer
 set(Player, 'human', NexPlayer):- lastPawn(Player, Pawn), addPosPawn(Pawn), set(Player), !.
 % AI set a pawn, and turn to Player
-%set(Player, 'ai', NexPlayer):- bestChange(Player, 3, L, M, X, Y), setOnBoard(X, Y, M), placement(NexPlayer), !.
+set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(L), bestChange(Player, 3, L, Pawn, A), setOnBoard(Pawn, A), placement(NexPlayer), !.
 
 % addCoordPawn: add coordonates of each pawn
 addPosPawn(Pawn):- lastPawn(Player, Pawn), player(Player, Name), write(Name), write(', add a position such as "An." (n for number) for the pawn '), writeln(Pawn),write(' : A') read(PosPawn), checkPos(Pawn, PosPawn), not(pawnPosition(_, PosPawn)), !, setOnBoard(Pawn, PosPawn), nl.
@@ -75,17 +103,16 @@ stage2:- not(lastPawn('B', _)), not(lastPawn('R', _)), !, not(winner('B')), not(
 movePawn(Player):- nextPlayer(Player, NextPlayer), not(winner(NextPlayer)), !, playerType(Player, Type), movePawn(Player, Type, NextPlayer).
 % If at the end of the stage 2 we have a winner -> end of the game
 movePawn(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
+/*
 % Player move a pawn, and turn to NextPlayer
 movePawn(Player, 'human', NextPlayer):- player(Player, Name), write(Name), writeln(', chose a pawn as "2." : '), read(PawnToMove), writeln(', and add a position such as "An." (n for number) : A'), 
 		read(NewPosPawn), name(NewPosPawn, NewPos), consultList(Player, NewPos), movePawn(NextPlayer), !.
 
-
-%movePawn(Player, 'ai', NextPlayer):- player(Player, Name), write(Name), write(' ok let me see...'), bestChange('R', 3, L, Marker, X, Y), move(X, Y, Marker),
-%       show, movePawn(NextPlayer), !.
-
+movePawn(Player, 'ai', NextPlayer):- writeln('Its my turn, ok let me see...'), choseAiLevel(L), bestChange('R', 3, L, Pawn, A), moveOnBoard(Pawn, A), movePawn(NextPlayer), !.
+*/
 /*----------------------------- END OF GAME : haveAWinner -----------------------------------------*/
 
 haveAWinner(Player, 'human'):- writeln(' We have a winner !!'), player(Player, Name), write(Name), writeln(' won this game !').
 haveAWinner(Player, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah ;)').
 
-:- hMI.
+:- init. %begin with game initialisation 
