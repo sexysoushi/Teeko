@@ -1,7 +1,7 @@
 /* Teeko.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
 %:- consult('AI.pl'). % inclusion of file AI.pl
 :- consult('WinListv2.pl'). % inclusion of file AI.pl
-:- dynamic board/2.
+:- dynamic board/1.
 
 /* Prolog function use */
 %between(+Low, +High, ?Value)
@@ -61,12 +61,12 @@ nextPlayer('R', 'B'):- writeln('nextPlayerR').
 nextPlayer('B', 'R'):- writeln('nextPlayerB').
 
 %Return if combo of pawn is win combo
-winner(Player):- writeln('winner'), playerVal(Player, Val), winList(board, Val), !.
+winner(Player):- writeln('winner'), playerVal(Player, Val), winList(board(L), Val), !.
 
 %check if case is free
-checkAvailblePos(A):- checkAvailblePos(A, board).
-checkAvailblePos(1, [0|_]).
-checkAvailblePos(A, [_|R]):- A>0, A1 is A-1, checkAvailblePos(A1, R).
+checkAvailblePos(A):- writeln('Je check si la place est fruiiiiiit'), checkAvailblePos(A, board(L)).
+checkAvailblePos(1, board([0|_])).
+checkAvailblePos(A, board([_|R])):- A > 0, A1 is A-1, checkAvailblePos(A1, board(R)).
 
 %Set Pawn on board
 setOnBoard(Player, 1):- playerVal(Player, V), assertz(board([V|_])).
@@ -123,41 +123,12 @@ unsetOnBoard(Player, 24):- V is 0, assertz(board([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 unsetOnBoard(Player, 25):- V is 0, assertz(board([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, V])).
 
 %verfi nombre de pion sur board
-fullBoard(NbPawnOnBoard):- sublist(\=(0), board, L), length(L, NbPawnOnBoard).
+fullBoard(NbPawnOnBoard):- sublist(\=(0), board(List), L), length(L, NbPawnOnBoard).
 
 % verif si ca appartient au bon player
-checkPawnPlayer(Player, A):- checkAvailblePos(Player, A, board).
-checkPawnPlayer(Player, 1, [Val|_]), player(Player, Val).
-checkPawnPlayer(Player, A, [_|R]):- A>0, A1 is A-1, checkAvailblePos(Player, A1, R).
+checkPawnPlayer(Player, A):- checkAvailblePos(Player, A, board(List)).
+checkPawnPlayer(Player, 1, board([Val|_])):- player(Player, Val).
+checkPawnPlayer(Player, A, board([_|R])):- A>0, A1 is A-1, checkAvailblePos(Player, A1, R).
 
 %move pawn : assert new et retract old
-moveOnBoard(Player, Pawn, ToA).:- setOnBoard(Player, ToA), unsetOnBoard(Player, Pawn).
-
-
-
-
-
-
-
-
-
-%moveOnBoard : Move pawn to next position and retract the last position
-moveOnBoard(Pawn, ToA):- pawnPosition(Pawn, FromA), assert(pawnPosition(Pawn, ToA)), retract(pawnPosition(Pawn, FromA)), !.
-
-%calcAllMove : calculate all moves available for all pawns
-calcAllMove(Player, Pawn, ToA):- pawnList(Player, PawnList), member(Pawn, PawnList), calcMove(Pawn, ToA).
-/*
-%calcMove for M
-calcMove(Pawn, ToA):- pawnPosition(Pawn, FromA),
-				between(1, 25, ToA),
-				between(4, 6, Val)
-
-inRange([TOX, TOY], 1, 5),
-    MAXX is FROMX + 1, MINX is FROMX - 1, inRange([TOX], MINX, MAXX),
-    MAXY is FROMY + 1, MINY is FROMY - 1, inRange([TOY], MINY, MAXY),
-    sdif(TOX, FROMX, TOY, FROMY),
-    not(pawnPosition(_, ToA)).
-*/
-%calcAll : calculate all moves/set depending on phase
-calcAll(Player, Pawn, A):- lastPawn(Player, Pawn), calcAllSet(Player, Pawn, A).
-calcAll(Player, Pawn, A):- not(lastPawn(Player, Pawn)), calcAllMove(Player, Pawn, A).
+moveOnBoard(Player, Pawn, ToA):- setOnBoard(Player, ToA), unsetOnBoard(Player, Pawn).
