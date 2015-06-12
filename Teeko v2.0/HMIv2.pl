@@ -12,7 +12,30 @@
 %writeln(X)
 %read(-Char)
 %nl
+/*------------------------------------------- BOARD design ---------------------------------------------
 
+| A1  | A2  | A3  | A4  | A5  |
+_______________________________
+| A6  | A7  | A8  | A9  | A10 |
+_______________________________
+| A11 | A12 | A13 | A14 | A15 |
+_______________________________
+| A16 | A17 | A18 | A19 | A20 |
+_______________________________
+| A21 | A22 | A23 | A24 | A25 |
+
+Move available on board:
+Always between 1:25 (board side)
+Pos - 6
+Pos - 5
+Pos - 4
+Pos - 1
+Pos + 1
+Pos + 4
+Pos + 5
+Pos + 6
+
+ -------------------------------------------------------------------------------------------------------*/
 /*-------------------------------------- Game Initialisation & GAME MODE ---------------------------------------*/
 
 :- consult('TEEKOv2.pl'). % inclusion of file teeko.pl
@@ -50,7 +73,7 @@ applyLevelChose(3):- assert(choseAiLevel(3)).
 applyLevelChose(_):- writeln('Error level. Try again !'), nl, getAiLevel.
 
 % launch the game
-launchGame:- /*board,*/ nl, % board display
+launchGame:- display, nl, % board display
         writeln('Ready ? 3, 2, 1... Let s go !'),
         set('B'). % game begin with player Black, Rules of Teeko.
 
@@ -71,14 +94,30 @@ clearBoard:- board([0, 0, 0, 0, 0,
 		]).
 
 % resetAll
-resetAll:- resetPlayerType, resetChoseAiLevel, clearBoard.
+resetAll:- resetPlayerType, resetChoseAiLevel, cls.
 
 /*----------------------------- BOARD DISPLAY -----------------------------------------*/
 
-%clearboard:- ...
+% cls (clear screen): nettoyage de l'ecran
+cls:- put(27), put("["), put("2"), put("J").
 
-%board:- ...
-
+%display
+display:- board(L), writeln(L),
+		write('___________ BOARD ____________'), nl,
+		write('|  '), pawnOnThisCase(1, Val), write(Val), write('  |  '), pawnOnThisCase(2, Val), write(Val), write('  |  '), pawnOnThisCase(3, Val), write(Val), write('  |  '), pawnOnThisCase(4, Val), write(Val), write('  |  '), pawnOnThisCase(5, Val), write(Val), write('  |'), nl,
+		writeln('_______________________________'),
+		write('|  '), pawnOnThisCase(6, Val), write(Val), write('  |  '), pawnOnThisCase(7, Val), write(Val), write('  |  '), pawnOnThisCase(8, Val), write(Val), write('  |  '), pawnOnThisCase(9, Val), write(Val), write('  |  '), pawnOnThisCase(10, Val), write(Val), write('  |'), nl,
+		writeln('_______________________________'),
+		write('|  '), pawnOnThisCase(11, Val), write(Val), write('  |  '), pawnOnThisCase(12, Val), write(Val), write('  |  '), pawnOnThisCase(13, Val), write(Val), write('  |  '), pawnOnThisCase(14, Val), write(Val), write('  |  '), pawnOnThisCase(15, Val), write(Val), write('  |'), nl,
+		writeln('_______________________________'),
+		write('|  '), pawnOnThisCase(16, Val), write(Val), write('  |  '), pawnOnThisCase(17, Val), write(Val), write('  |  '), pawnOnThisCase(18, Val), write(Val), write('  |  '), pawnOnThisCase(19, Val), write(Val), write('  |  '), pawnOnThisCase(20, Val), write(Val), write('  |'), nl,
+		writeln('_______________________________'),
+		write('|  '), pawnOnThisCase(21, Val), write(Val), write('  |  '), pawnOnThisCase(22, Val), write(Val), write('  |  '), pawnOnThisCase(23, Val), write(Val), write('  |  '), pawnOnThisCase(24, Val), write(Val), write('  |  '), pawnOnThisCase(25, Val), write(Val), write('  |'), nl,
+		write('_______________________________').
+		
+pawnOnThisCase(N, Val):- board(L), pawnOnThisCase(N, Val, L).
+pawnOnThisCase(1, Val, [Val|_]).
+pawnOnThisCase(N, _, [_|R]):- N > 0, N1 is N - 1, pawnOnThisCase(N1, _, R).
 
 /*----------------------------- GAME STAGE 1 : Set pawns -----------------------------------------*/
 
@@ -90,11 +129,11 @@ set(Player):- writeln('set3'), move(Player).
 % Player set a pawn, and turn to NextPlayer
 set(Player, 'human', NexPlayer):- writeln('set joueur humain'), addPosPawn(Player), writeln('PASSE PAR LA'), set(NextPlayer), !.
 % AI set a pawn, and turn to Player
-set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, L, Pawn, A), setOnBoard(Pawn, A), set(NexPlayer), !.
+set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), set(NexPlayer), !.
 
 % addCoordPawn: add coordonates of each pawn
 addPosPawn(Player):- 
-		writeln('addPosPawn'), write(Player), write(', add a position on board such as "05.", "12." or "25." : '),
+		writeln('addPosPawn'), write(Player), write(', add a position on board such as "5.", "12." or "25." : '),
 		read(X), writeln(X), name(X, PosPawn), checkPos(Player, PosPawn, Pos), writeln(Pos), checkAvPos(Player, Pos), !.
 addPosPawn(Player):- nl, writeln(' Unavailable position. Try again !'), addPosPawn(Player).
 
@@ -121,15 +160,47 @@ move(Player):- nextPlayer(Player, NextPlayer), not(winner(NextPlayer)), !, playe
 move(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
 % Player move a pawn, and turn to NextPlayer
 move(Player, 'human', NextPlayer):- movePawn(Player), move(NextPlayer), !.
-/*
-move(Player, 'ai', NextPlayer):- writeln('Its my turn, ok let me see...'), choseAiLevel(L), bestChange('R', 3, L, Pawn, A), moveOnBoard(Pawn, A), movePawn(NextPlayer), !.
-*/
-% movePawn
-movePawn(Player):- player(Player, Name), write(Name), writeln('. write the position of pawn to move (as "n.") : '), read(X), name(X, PawnToMove),
-					writeln(', and the position to move (as "n.") :'), read(Y), name(Y, NewPos), checkNewPos(Player, PawnToMove, NewPos).
+% AI set a pawn, and turn to Player
+move(Player, 'ai', NexPlayer):- player(Player, Name), write(Name), write('Its my turn, ok let me see... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), move(NexPlayer), !.
 
-checkNewPos(Player, PawnTo, NewPos):- between(1, 25, PawnTo), between(1, 25, NewPos),!, checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos). % check position and pawn add by the player
+% movePawn
+movePawn(Player):- player(Player, Name), write(Name),
+					writeln('. write the position of pawn to move (as "n.") : '), read(X), name(X, PawnToMove),
+					writeln(', and the position to move (as "n.") :'), read(Y), name(Y, NewPos),
+					checkNewPos(Player, PawnToMove, NewPos).
+					
+checkNewPos(Player, [A,B], [C,D]):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 2, between(0, 5, B1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 2, between(0, 5, D1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB),	
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, PosNumberAB, PosNumberCD). % check position and pawn add by the player	
+checkNewPos(Player, [A,B], [C,D]):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 2, between(0, 5, B1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 1, between(0, 9, D1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB),	
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, PosNumberAB, PosNumberCD). % check position and pawn add by the player				
+checkNewPos(Player, [A,B], [C,D]):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 1, between(0, 9, B1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 2, between(0, 5, D1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB),	
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, PosNumberAB, PosNumberCD). % check position and pawn add by the player				
+checkNewPos(Player, [A,B], [C,D]):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 1, between(0, 9, B1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 1, between(0, 9, D1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB),	
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, PosNumberAB, PosNumberCD). % check position and pawn add by the player								
+checkNewPos(Player, [A,B], C):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 1, between(0, 9, B1),
+							C1 is C - 48, writeln(C1), between(1, 25, C1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB), nextStep(Player, PosNumberAB, C1). % check position and pawn add by the player	
+checkNewPos(Player, [A,B], C):- A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1), A1 == 2, between(0, 5, B1),
+							C1 is C - 48, writeln(C1), between(1, 25, C1), !,
+							atom_concat(A1, B1, PosAtomAB), atom_number(PosAtomAB, PosNumberAB), nextStep(Player, PosNumberAB, C1). % check position and pawn add by the player							
+checkNewPos(Player, A, [C,D]):- A1 is A - 48, writeln(A1), between(1, 25, A1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 1, between(0, 9, D1), !,
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, A1, PosNumberCD). % check position and pawn add by the player		
+checkNewPos(Player, A, [C,D]):- A1 is A - 48, writeln(A1), between(1, 25, A1),
+							C1 is C - 48, writeln(C1), D1 is D - 48, writeln(D1), C1 == 2, between(0, 5, D1), !,
+							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, A1, PosNumberCD). % check position and pawn add by the player							
 checkNewPos(Player, _, _):- write('Error Pawn or new position request. Try again ! (dont forget the . )'), movePawn(Player). % else return to addPosPawn
+
+nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos).
+
 
 % checkPossibleMove : check if its a correct move of the pawn and if the case is free.
 checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn - 6, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).

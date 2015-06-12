@@ -66,7 +66,7 @@ winner(Player):- writeln('winner'), playerVal(Player, Val), winList(board(L), Va
 %check if case is free
 checkAvailblePos(A):- writeln('Je check si la place est fruiiiiiit'), checkAvailblePos(A, board(L)).
 checkAvailblePos(1, board([0|_])).
-checkAvailblePos(A, board([_|R])):- A > 0, A1 is A-1, checkAvailblePos(A1, board(R)).
+checkAvailblePos(A, board([_|R])):- A > 0, A1 is A - 1, checkAvailblePos(A1, board(R)).
 
 %Set Pawn on board
 setOnBoard(Player, 1):- playerVal(Player, V), assertz(board([V|_])).
@@ -126,9 +126,9 @@ unsetOnBoard(Player, 25):- V is 0, assertz(board([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 fullBoard(NbPawnOnBoard):- sublist(\=(0), board(List), L), length(L, NbPawnOnBoard).
 
 % verif si ca appartient au bon player
-checkPawnPlayer(Player, A):- checkAvailblePos(Player, A, board(List)).
+checkPawnPlayer(Player, A):- checkPawnPlayer(Player, A, board(List)).
 checkPawnPlayer(Player, 1, board([Val|_])):- player(Player, Val).
-checkPawnPlayer(Player, A, board([_|R])):- A>0, A1 is A-1, checkAvailblePos(Player, A1, R).
+checkPawnPlayer(Player, A, board([_|R])):- A > 0, A1 is A - 1, checkPawnPlayer(Player, A1, R).
 
 %move pawn : assert new et retract old
 moveOnBoard(Player, Pawn, ToA):- setOnBoard(Player, ToA), unsetOnBoard(Player, Pawn).
