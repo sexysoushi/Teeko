@@ -1,4 +1,4 @@
-/* HMI.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
+/* HMI.pl - Barbara SCHIAVI - IA41 UTBM 2015*/
 
 /* Prolog function use */
 %between(+Low, +High, ?Value)
@@ -12,6 +12,7 @@
 %writeln(X)
 %read(-Char)
 %nl
+
 /*------------------------------------------- BOARD design ---------------------------------------------
 
 | A1  | A2  | A3  | A4  | A5  |
@@ -87,14 +88,14 @@ resetChoseAiLevel:- !.
 
 % clearBoard: reset dynamic predicat of board
 clearBoard:- board([0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0
-		]).
+					0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0
+					]).
 
 % resetAll
-resetAll:- resetPlayerType, resetChoseAiLevel, cls.
+resetAll:- resetPlayerType, resetChoseAiLevel, clearBoard, cls.
 
 /*----------------------------- BOARD DISPLAY -----------------------------------------*/
 
@@ -127,9 +128,9 @@ set(Player):- writeln('set1'), not(stageTwo), nextPlayer(Player, NextPlayer), no
 set(Player):- writeln('set2'), nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
 set(Player):- writeln('set3'), move(Player).
 % Player set a pawn, and turn to NextPlayer
-set(Player, 'human', NexPlayer):- writeln('set joueur humain'), addPosPawn(Player), writeln('PASSE PAR LA'), set(NextPlayer), !.
+set(Player, 'human', NexPlayer):- writeln('set joueur humain'), addPosPawn(Player), writeln('PASSE PAR LA'), display, set(NextPlayer), !.
 % AI set a pawn, and turn to Player
-set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), set(NexPlayer), !.
+set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), addOnList(Player, Pos), playerPawnList(Player, PawnPlayerList), writeln(PawnPlayerList), display, set(NexPlayer), !.
 
 % addCoordPawn: add coordonates of each pawn
 addPosPawn(Player):- 
@@ -144,7 +145,8 @@ checkPos(Player, [A,B], PosNumber):- writeln('checkPos2'), A1 is A - 48, writeln
 							A1 == 2, between(0, 5, B1), !, atom_concat(A1, B1, PosAtom), atom_number(PosAtom, PosNumber), writeln(PosNumber). % check position add by the player from 20 to 25
 checkPos(Player, A, Pos):- writeln('checkPos2'), A1 is A - 48, writeln(A1), between(1, 9, A1), !,
 							Pos is A1, writeln(Pos). % check position add by the player from 01 to 09
-checkPos(Player, _):- write('Error position. Try again ! (dont forget the . )'), addPosPawn(Player). % else return to addPosPawn
+checkPos(Player, _, _):- write('Error position. Try again ! (dont forget the . )'), addPosPawn(Player). % else return to addPosPawn
+
 
 checkAvPos(Player, Pos):- writeln('checkAvPos'), checkAvailblePos(Pos), !, writeln('PASSE PAR ICI'), writeln(Player), writeln(Pos), setOnBoard(Player, Pos).
 
@@ -159,9 +161,9 @@ move(Player):- nextPlayer(Player, NextPlayer), not(winner(NextPlayer)), !, playe
 % If at the end of the stage 2 we have a winner -> end of the game
 move(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
 % Player move a pawn, and turn to NextPlayer
-move(Player, 'human', NextPlayer):- movePawn(Player), move(NextPlayer), !.
-% AI set a pawn, and turn to Player
-move(Player, 'ai', NexPlayer):- player(Player, Name), write(Name), write('Its my turn, ok let me see... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), move(NexPlayer), !.
+move(Player, 'human', NextPlayer):- movePawn(Player), display, move(NextPlayer), !.
+% AI move a pawn, and turn to Player
+move(Player, 'ai', NexPlayer):- player(Player, Name), write(Name), write('Its my turn, ok let me see... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), display, move(NexPlayer), !.
 
 % movePawn
 movePawn(Player):- player(Player, Name), write(Name),
@@ -199,18 +201,7 @@ checkNewPos(Player, A, [C,D]):- A1 is A - 48, writeln(A1), between(1, 25, A1),
 							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, A1, PosNumberCD). % check position and pawn add by the player							
 checkNewPos(Player, _, _):- write('Error Pawn or new position request. Try again ! (dont forget the . )'), movePawn(Player). % else return to addPosPawn
 
-nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos).
-
-
-% checkPossibleMove : check if its a correct move of the pawn and if the case is free.
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn - 6, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn - 5, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn - 4, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 10, 15, 20, 25])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn - 1, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn + 1, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn + 4, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21, 22, 23, 24, 25])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn + 5, ToA == NewA, !, not(member(Pawn, [21, 22, 23, 24, 25])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
-checkPossibleMove(Player, Pawn, ToA):- NewA is Pawn + 6, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25, 21, 22, 23, 24])), !, checkAvailblePos(NewA), moveOnBoard(Player, Pawn, NewA).
+nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos, NewA), !, moveOnBoard(Player, Pawn, NewA).
 
 /*----------------------------- END OF GAME : haveAWinner -----------------------------------------*/
 

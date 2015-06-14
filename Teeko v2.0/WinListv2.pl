@@ -1,4 +1,4 @@
-/* WinListv2.pl - Barbara SCHIAVI & Paul Emile BRETEGNIER - IA41 UTBM 2015*/
+/* winListv2.pl - Barbara SCHIAVI - IA41 UTBM 2015*/
 /*------------------------------------------- BOARD design ---------------------------------------------
 
 | A1  | A2  | A3  | A4  | A5  |
@@ -13,61 +13,63 @@ _______________________________
 
  -------------------------------------------------------------------------------------------------------*/
 /*--------------------------------------------------------------- Win Line ---------------------------------------------------------------*/
-winList([PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _,
+
+
+win(1, [PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn,
+win(2, [_, PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(3, [_, _, _, _, _,
 			PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(4, [_, _, _, _, _,
 			_, PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).		
-winList([_, _, _, _, _,
+win(5, [_, _, _, _, _,
 			_, _, _, _, _,
 			PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(6, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn,
 			_, _, _, _, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(7, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(8, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn,
 			_, _, _, _, _
 		], PlayerPawn).	
-winList([_, _, _, _, _,
+win(9, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			PlayerPawn, PlayerPawn, PlayerPawn, PlayerPawn, _
 		], PlayerPawn).
-winList([_, _, _, _, _,
+win(10, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
@@ -76,52 +78,52 @@ winList([_, _, _, _, _,
 		
 
 /*--------------------------------------------------------------- Win Column ---------------------------------------------------------------*/
-winList([PlayerPawn, _, _, _, _,
+win(11, [PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(12, [_, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			PlayerPawn, _, _, _, _], PlayerPawn).
-winList([_, PlayerPawn, _, _, _,
+win(13, [_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(14, [_, _, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, PlayerPawn, _, _, _], PlayerPawn).
-winList([_, _, PlayerPawn, _, _,
+win(15, [_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, _, _, _], PlayerPawn).			
-winList([_, _, _, _, _,
+win(16, [_, _, _, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, PlayerPawn, _, _], PlayerPawn).
-winList([_, _, _, PlayerPawn, _,
+win(17, [_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(18, [_, _, _, _, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, PlayerPawn, _], PlayerPawn).
-winList([_, _, _, _, PlayerPawn,
+win(19, [_, _, _, _, PlayerPawn,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(20, [_, _, _, _, _,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, PlayerPawn,
@@ -129,42 +131,42 @@ winList([_, _, _, _, _,
 
 		
 /*--------------------------------------------------------------- Win Diago ---------------------------------------------------------------*/
-winList([PlayerPawn, _, _, _, _,
+win(21, [PlayerPawn, _, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(22, [_, _, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, _, PlayerPawn], PlayerPawn).
-winList([_, _, _, _, _,
+win(23, [_, _, _, _, _,
 			PlayerPawn, _, _, _, _,
 			_, PlayerPawn, _, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, _, PlayerPawn, _], PlayerPawn).			
-winList([_, PlayerPawn, _, _, _,
+win(24, [_, PlayerPawn, _, _, _,
 			_, _, PlayerPawn, _, _,
 			_, _, _, PlayerPawn, _,
 			_, _, _, _, PlayerPawn,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, PlayerPawn,
+win(25, [_, _, _, _, PlayerPawn,
 			_, _, _, PlayerPawn, _,
 			_, _, PlayerPawn, _, _,
 			_, PlayerPawn, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(26, [_, _, _, _, _,
 			_, _, _, PlayerPawn, _,
 			_, _, PlayerPawn, _, _,
 			_, PlayerPawn, _, _, _,
 			PlayerPawn, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(27, [_, _, _, _, _,
 			_, _, _, _, PlayerPawn,
 			_, _, _, PlayerPawn, _,
 			_, _, PlayerPawn, _, _,
 			_, PlayerPawn, _, _, _], PlayerPawn).
-winList([_, _, _, PlayerPawn, _,
+win(28, [_, _, _, PlayerPawn, _,
 			_, _, PlayerPawn, _, _,
 			_, PlayerPawn, _, _, _,
 			PlayerPawn, _, _, _, _,
@@ -172,82 +174,82 @@ winList([_, _, _, PlayerPawn, _,
 
 		
 /*--------------------------------------------------------------- Win Square ---------------------------------------------------------------*/
-winList([PlayerPawn, PlayerPawn, _, _, _,
+win(29, [PlayerPawn, PlayerPawn, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, PlayerPawn, PlayerPawn, _, _,
+win(30, [_, PlayerPawn, PlayerPawn, _, _,
 			_, PlayerPawn, PlayerPawn, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, PlayerPawn, PlayerPawn, _,
+win(31, [_, _, PlayerPawn, PlayerPawn, _,
 			_, _, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, PlayerPawn, PlayerPawn,
+win(32, [_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(33, [_, _, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(34, [_, _, _, _, _,
 			_, PlayerPawn, PlayerPawn, _, _,
 			_, PlayerPawn, PlayerPawn, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(35, [_, _, _, _, _,
 			_, _, PlayerPawn, PlayerPawn, _,
 			_, _, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(36, [_, _, _, _, _,
 			_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, _, _,
 			_, _, _, _, _], PlayerPawn).			
-winList([_, _, _, _, _,
+win(37, [_, _, _, _, _,
 			_, _, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(38, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, PlayerPawn, PlayerPawn, _, _,
 			_, PlayerPawn, PlayerPawn, _, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(39, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, PlayerPawn, PlayerPawn, _,
 			_, _, PlayerPawn, PlayerPawn, _,
 			_, _, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(40, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, PlayerPawn, PlayerPawn,
 			_, _, _, _, _], PlayerPawn).			
-winList([_, _, _, _, _,
+win(41, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _,
 			PlayerPawn, PlayerPawn, _, _, _], PlayerPawn).
-winList([_, _, _, _, _,
+win(42, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_,PlayerPawn, PlayerPawn, _, _,
 			_, PlayerPawn, PlayerPawn, _, _], PlayerPawn).	
-winList([_, _, _, _, _,
+win(43, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _,PlayerPawn, PlayerPawn, _,
 			_, _,PlayerPawn, PlayerPawn, _], PlayerPawn).	
-winList([_, _, _, _, _,
+win(44, [_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, _, _,
 			_, _, _, PlayerPawn, PlayerPawn,
