@@ -201,7 +201,7 @@ checkNewPos(Player, A, [C,D]):- A1 is A - 48, writeln(A1), between(1, 25, A1),
 							atom_concat(C1, D1, PosAtomCD), atom_number(PosAtomCD, PosNumberCD), nextStep(Player, A1, PosNumberCD). % check position and pawn add by the player							
 checkNewPos(Player, _, _):- write('Error Pawn or new position request. Try again ! (dont forget the . )'), movePawn(Player). % else return to addPosPawn
 
-nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos, NewA), !, moveOnBoard(Player, Pawn, NewA).
+nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPossibleMove(Player, PawnTo, NewPos, NewA), !, moveOnBoard(Player, PawnTo, NewA).
 
 /*----------------------------- END OF GAME : haveAWinner -----------------------------------------*/
 

@@ -73,7 +73,7 @@ addOnList(Player, Pos, [_, _, _, 0]):- !, assertz(playerPawnList(Player, [_, _, 
 winner(Player):- writeln('winner'), board(L), playerVal(Player, Val), win(_, L, Val), !.
 
 %check if case is free
-checkAvailblePos(A):- writeln('Je check si la place est fruiiiiiit'), board(L), checkAvailblePos(A, L, 0).
+checkAvailblePos(A):- writeln('Je check si la place est fruiiiiiit'), between(1, 25, A), board(L), checkAvailblePos(A, L, 0).
 checkAvailblePos(A, [0|_], A).
 checkAvailblePos(A, [_|R], N):- N1 is N + 1, checkAvailblePos(A, R, N1).
 
