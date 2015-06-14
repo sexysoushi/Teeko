@@ -28,15 +28,9 @@ _______________________________
 
 -------------------------------- Algo MinMax with AlphaBeta -------------------------------------------------*/
 
-%return nb player pawn on board
-pawnPlayerOnBoard(Player, NbPawnOnBoard):- board(BoardList), pawnPlayerOnBoard(Player, 0, BoardList).
-pawnPlayerOnBoard(Player, NbPawnOnBoard, []).
-pawnPlayerOnBoard(Player, NbPawnOnBoard, [Val|R]):- player(Player, Val), NbPawnOnBoard is NbPawnOnBoard + 1, pawnPlayerOnBoard(Player, NbPawnOnBoard, R).
-pawnPlayerOnBoard(Player, NbPawnOnBoard, [_|R]):- pawnPlayerOnBoard(Player, NbPawnOnBoard, R).
-
 %return a random pos on the board if the random case is free
 randPosOnBoard(RandPos):- board(BoardList), length(BoardList, Length), random(0, Length, Index), checkAvailblePos(Index), !, RandPos == Index.
-randPosOnBoard(RandPos).
+randPosOnBoard(_).
 
 %detect player win change depending on difficulty
 detectPlayerWinChange(1):- random(X), X < 0.75.
@@ -74,21 +68,21 @@ setOrMoveSearch(Player, A):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnB
 setOrMoveSearch(Player, A):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard == 4, allMoveSearch(Player, A).
 
 %check position 0 in board
-allSetSearch(_, A):- board(BoardList), allSetSearch(_, 1, BoardList).
-allSetSearch(_, A, [0|R]).
+allSetSearch(_, _):- board(BoardList), allSetSearch(_, 1, BoardList).
+allSetSearch(_, _, [0|_]).
 allSetSearch(_, A, [_|R]):- A1 is A + 1, allSetSearch(_, A1, R).
 
 %allMoveSearch : search all moves available for all markers of a color
-allMoveSearch(Player, ToA):- playerPawnList(Player, PawnPlayerList), member(FromA, PawnPlayerList), retournPossibleMove(Player, FromA, ToA).
+allMoveSearch(Player, ToA):- playerPawnList(Player, PawnPlayerList), member(FromA, PawnPlayerList), retournPossibleMove(FromA, ToA).
 
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn - 6, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn - 5, !, not(member(Pawn, [1, 2, 3, 4, 5])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn - 4, !, not(member(Pawn, [1, 2, 3, 4, 5, 10, 15, 20, 25])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn - 1, !, not(member(Pawn, [1, 6, 11, 16, 21])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn + 1, !, not(member(Pawn, [5, 10, 15, 20, 25])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn + 4, !, not(member(Pawn, [1, 6, 11, 16, 21, 22, 23, 24, 25])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn + 5, !, not(member(Pawn, [21, 22, 23, 24, 25])), !, checkAvailblePos(ToA).
-retournPossibleMove(Player, Pawn, ToA):- ToA is Pawn + 6, !, not(member(Pawn, [5, 10, 15, 20, 25, 21, 22, 23, 24])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn - 6, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn - 5, !, not(member(Pawn, [1, 2, 3, 4, 5])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn - 4, !, not(member(Pawn, [1, 2, 3, 4, 5, 10, 15, 20, 25])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn - 1, !, not(member(Pawn, [1, 6, 11, 16, 21])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn + 1, !, not(member(Pawn, [5, 10, 15, 20, 25])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn + 4, !, not(member(Pawn, [1, 6, 11, 16, 21, 22, 23, 24, 25])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn + 5, !, not(member(Pawn, [21, 22, 23, 24, 25])), !, checkAvailblePos(ToA).
+retournPossibleMove(Pawn, ToA):- ToA is Pawn + 6, !, not(member(Pawn, [5, 10, 15, 20, 25, 21, 22, 23, 24])), !, checkAvailblePos(ToA).
 
 % Set phase
 change([[Player, A]|R], V, AiLevel, [TE|RE], MINMAX, ALPHA, BETA, VAL):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard == 2, !,
@@ -110,9 +104,6 @@ change([[Player, ToA]|R], V, AiLevel, [TE|RE], MINMAX, ALPHA, BETA, VAL):- pawnP
 	retournPossibleMove(Player, PreviousA, FromA), move(PreviousA, FromA),
     min_or_max(MINMAX, [VAL, T], NEWVAL), alphaBeta(MINMAX, NEWVAL, ALPHA, BETA, AiLevel, R, V, RE).
 change([], _, _, [], _, _, _, _).
-
-%move
-move(TOX, TOY, M) :- position(FROMX, FROMY, M), calcMove(TOX, TOY, M), assert(position(TOX, TOY, M)), retract(position(FROMX, FROMY, M)), !.
 
 % check if there are a possible move and move pawn on board
 move(FromA, ToA):- checkPossibleMove(Player, FromA, ToA, _), moveOnBoard(Player, FromA, ToA).
@@ -140,7 +131,7 @@ evaluation(AiLevel, Player, -100):- AiLevel > 1, nextPlayer(Player, NextPlayer),
 evaluation(1, Player, RE):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard < 4, !,
 							calcNbWinSet(Player, NbWinList, NbPawnOnBoard), RE is ((NbPawnOnBoard * NbWinList) / 2).
 %calcAlignment if 4 pawns of a player are on board
-evaluation(1, Player, RE):- random_between(0.2, 1, NA), RE is 2 * NA.
+evaluation(1, _, RE):- random_between(0.2, 1, NA), RE is 2 * NA.
 
 %Evaluation function - MEDIUM level, if not 4 pawn player are on board
 evaluation(2, Player, RE):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard < 4, nextPlayer(Player, NextPlayer), pawnPlayerOnBoard(NextPlayer, NbPawnOnBoard1), NbPawnOnBoard1 < 4, !,
@@ -150,24 +141,23 @@ evaluation(2, Player, RE):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBo
 				random_between(0.2, 1, NA), random_between(0.2, 1, NA1), RE is (6 * NA - 4 * NA1).
 %else calcAlignment
 evaluation(2, Player, RE):- random_between(0.2, 1, NA), nextPlayer(Player, NextPlayer), random_between(0.2, 1, NA1), pawnPlayerOnBoard(Player, NbPawnOnBoard), pawnPlayerOnBoard(NextPlayer, NbPawnOnBoard1),
-				calcNbWinSet(Player, NbWinList, NbPawnOnBoard), calcNbWinSet(NextPlayer, NbWinList1, NbPawnOnBoard1), RE is (6 * NA - 4 * NA2 + NbPawnOnBoard * NbWinList - NbPawnOnBoard1 * NbWinList1).
+				calcNbWinSet(Player, NbWinList, NbPawnOnBoard), calcNbWinSet(NextPlayer, NbWinList1, NbPawnOnBoard1), RE is (6 * NA - 4 * NA1 + NbPawnOnBoard * NbWinList - NbPawnOnBoard1 * NbWinList1).
 				
 %Evaluation function - HARD level, if not 4 pawn player are on board
 evaluation(3, Player, RE):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard == 4, nextPlayer(Player, NextPlayer), pawnPlayerOnBoard(NextPlayer, NbPawnOnBoard), NbPawnOnBoard == 4, !,
 				calcNbWinSet(Player, NbWinList, NbPawnOnBoard), calcNbWinSet(NextPlayer, NbWinList1, NbPawnOnBoard1), RE is (NbPawnOnBoard * NbWinList - 1.5 * NbWinList1 * NbPawnOnBoard1).
 evaluation(3, Player, RE):- pawnPlayerOnBoard(Player, NbPawnOnBoard), NbPawnOnBoard == 4, nextPlayer(Player, NextPlayer), pawnPlayerOnBoard(NextPlayer, NbPawnOnBoard), NbPawnOnBoard == 4, !,
-				random_between(0.2, 1, NA), random_between(0.2, 1, NA1), N is (4 * NA - 7 * NA1).
+				random_between(0.2, 1, NA), random_between(0.2, 1, NA1), RE is (4 * NA - 7 * NA1).
 evaluation(3, Player, RE):- random_between(0.2, 1, NA), nextPlayer(Player, NextPlayer), random_between(0.2, 1, NA2), pawnPlayerOnBoard(Player, NbPawnOnBoard), pawnPlayerOnBoard(NextPlayer, NbPawnOnBoard1),
-				calcNbWinSet(Player, NbWinList, NbPawnOnBoard), calcNbWinSet(Player, NbWinList1, NbPawnOnBoard1), RE is (4 * NA - 7 * NA2 + NbMC * NbWinList - NbPawnOnBoard1 * NbWinList1).
+				calcNbWinSet(Player, NbWinList, NbPawnOnBoard), calcNbWinSet(Player, NbWinList1, NbPawnOnBoard1), RE is (4 * NA - 7 * NA2 + NbPawnOnBoard * NbWinList - NbPawnOnBoard1 * NbWinList1).
 
 %if multi pawn on one wincombo
 winSearch(Player, N):- pawnPlayerOnBoard(Player, NbPawnOnBoard), playerVal(Player, Val), win(N, WinL, Val), winSearch(Player, NbPawnOnBoard, 0, WinL).
-winSearch(Player, NbPawnOnBoard, NbPawnOnBoard, L).
 winSearch(Player, NbPawnOnBoard, CompterPawn, [Val|R]):- playerVal(Player, Val), !, CompterPawn1 is CompterPawn + 1, winSearch(Player, NbPawnOnBoard, CompterPawn1, R).
 winSearch(Player, NbPawnOnBoard, CompterPawn, [_|R]):- winSearch(Player, NbPawnOnBoard, CompterPawn, R).
 
 %return nb win set
-calcNbWinSet(Player, NbWinList, WinList):- calcNbWinSet(Player, NbWinList, [], 44).
-calcNbWinSet(Player, NbWinList, WinList, 1):- length(WinList, NbWinList).
+calcNbWinSet(Player, NbWinList, _):- calcNbWinSet(Player, NbWinList, [], 44).
+calcNbWinSet(_, NbWinList, WinList, 1):- length(WinList, NbWinList).
 calcNbWinSet(Player, _, [N|R], N):- winSearch(Player, N),!, N1 is N - 1, calcNbWinSet(Player, R, N1).
 calcNbWinSet(Player, _, [N|R], N):- N1 is N - 1, calcNbWinSet(Player,[N|R], N1).

@@ -61,13 +61,25 @@ nextPlayer('R', 'B'):- writeln('nextPlayerR').
 nextPlayer('B', 'R'):- writeln('nextPlayerB').
 
 %AI player pawn list
-playerPawnList(Player, [0, 0, 0, 0]).
+playerPawnList('B', [0, 0, 0, 0]).
+playerPawnList('R', [0, 0, 0, 0]).
+
+parcoursPawnList(Player, NbElemZero):- playerPawnList(Player, List), parcoursPawnList(Player, NbElemZero, List, 0).
+parcoursPawnList(_, NbElemZero, [], Compter):- NbElemZero is Compter.
+parcoursPawnList(Player, NbElemZero, [0|R], Compter):- Compter1 is Compter + 1, parcoursPawnList(Player, NbElemZero, R, Compter1).
+parcoursPawnList(Player, NbElemZero, [_|R], Compter):- parcoursPawnList(Player, NbElemZero, R, Compter).
+
+%return nb player pawn on board
+pawnPlayerOnBoard(Player, _):- writeln('pawnPlayerOnBoard'), board(L), pawnPlayerOnBoard(Player, 0, L).
+pawnPlayerOnBoard(_, _, []).
+pawnPlayerOnBoard(Player, NbPawnOnBoard, [Val|R]):- player(Player, Val), NbPawnOnBoard1 is NbPawnOnBoard + 1, pawnPlayerOnBoard(Player, NbPawnOnBoard1, R).
+pawnPlayerOnBoard(Player, NbPawnOnBoard, [_|R]):- pawnPlayerOnBoard(Player, NbPawnOnBoard, R).
 
 %Add position on List
-addOnList(Player, Pos, [0, _, _, _]):- !, assertz(playerPawnList(Player, [Pos, _, _, _])).
-addOnList(Player, Pos, [_, 0, _, _]):- !, assertz(playerPawnList(Player, [_, Pos, _, _])).
-addOnList(Player, Pos, [_, _, 0, _]):- !, assertz(playerPawnList(Player, [_, _, Pos, _])).
-addOnList(Player, Pos, [_, _, _, 0]):- !, assertz(playerPawnList(Player, [_, _, _, Pos])).
+addOnList(Player, Pos):- writeln('je suis dans addOnList'), parcoursPawnList(Player, 4), assertz(playerPawnList(Player, [Pos, _, _, _])).
+addOnList(Player, Pos):- parcoursPawnList(Player, 4), assertz(playerPawnList(Player, [_, Pos, _, _])).
+addOnList(Player, Pos):- parcoursPawnList(Player, 4), assertz(playerPawnList(Player, [_, _, Pos, _])).
+addOnList(Player, Pos):- parcoursPawnList(Player, 4), assertz(playerPawnList(Player, [_, _, _, Pos])).
 
 %Return if combo of pawn is win combo
 winner(Player):- writeln('winner'), board(L), playerVal(Player, Val), win(_, L, Val), !.
@@ -105,49 +117,49 @@ setOnBoard(Player, 24):- playerVal(Player, V), assertz(board([_, _, _, _, _, _, 
 setOnBoard(Player, 25):- playerVal(Player, V), assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V])).
 
 %Unset Pawn off board
-unsetOnBoard(Player, 1):- V is 0, assertz(board([V|_])).
-unsetOnBoard(Player, 2):- V is 0, assertz(board([_, V|_])).
-unsetOnBoard(Player, 3):- V is 0, assertz(board([_, _, V|_])).
-unsetOnBoard(Player, 4):- V is 0, assertz(board([_, _, _, V|_])).
-unsetOnBoard(Player, 5):- V is 0, assertz(board([_, _, _, _, V|_])).
-unsetOnBoard(Player, 6):- V is 0, assertz(board([_, _, _, _, _, V|_])).
-unsetOnBoard(Player, 7):- V is 0, assertz(board([_, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 8):- V is 0, assertz(board([_, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 9):- V is 0, assertz(board([_, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 10):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 11):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 12):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 13):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 14):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 15):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 16):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 17):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 18):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 19):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 20):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 21):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 22):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 23):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 24):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
-unsetOnBoard(Player, 25):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V])).
+unsetOnBoard(_, 1):- V is 0, assertz(board([V|_])).
+unsetOnBoard(_, 2):- V is 0, assertz(board([_, V|_])).
+unsetOnBoard(_, 3):- V is 0, assertz(board([_, _, V|_])).
+unsetOnBoard(_, 4):- V is 0, assertz(board([_, _, _, V|_])).
+unsetOnBoard(_, 5):- V is 0, assertz(board([_, _, _, _, V|_])).
+unsetOnBoard(_, 6):- V is 0, assertz(board([_, _, _, _, _, V|_])).
+unsetOnBoard(_, 7):- V is 0, assertz(board([_, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 8):- V is 0, assertz(board([_, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 9):- V is 0, assertz(board([_, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 10):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 11):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 12):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 13):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 14):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 15):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 16):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 17):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 18):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 19):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 20):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 21):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 22):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 23):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 24):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V|_])).
+unsetOnBoard(_, 25):- V is 0, assertz(board([_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, V])).
 
 %verfi nombre de pion sur board
-fullBoard(NbPawnOnBoard):- sublist(\=(0), board(List), L), length(L, NbPawnOnBoard).
+fullBoard(NbPawnOnBoard):- board(List), sublist(\=(0), List, L), length(L, NbPawnOnBoard).
 
 % verif si ca appartient au bon player
-checkPawnPlayer(Player, A):- checkPawnPlayer(Player, A, board(List)).
+checkPawnPlayer(Player, A):- board(List), checkPawnPlayer(Player, A, List).
 checkPawnPlayer(Player, 1, board([Val|_])):- player(Player, Val).
 checkPawnPlayer(Player, A, board([_|R])):- A > 0, A1 is A - 1, checkPawnPlayer(Player, A1, R).
 
 % checkPossibleMove : check if its a correct move of the pawn and if the case is free.
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn - 6, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn - 5, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn - 4, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 10, 15, 20, 25])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn - 1, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn + 1, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn + 4, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21, 22, 23, 24, 25])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn + 5, ToA == NewA, !, not(member(Pawn, [21, 22, 23, 24, 25])), !, checkAvailblePos(NewA).
-checkPossibleMove(Player, Pawn, ToA, NewA):- NewA is Pawn + 6, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25, 21, 22, 23, 24])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn - 6, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 6, 11, 16, 21])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn - 5, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn - 4, ToA == NewA, !, not(member(Pawn, [1, 2, 3, 4, 5, 10, 15, 20, 25])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn - 1, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn + 1, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn + 4, ToA == NewA, !, not(member(Pawn, [1, 6, 11, 16, 21, 22, 23, 24, 25])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn + 5, ToA == NewA, !, not(member(Pawn, [21, 22, 23, 24, 25])), !, checkAvailblePos(NewA).
+checkPossibleMove(_, Pawn, ToA, NewA):- NewA is Pawn + 6, ToA == NewA, !, not(member(Pawn, [5, 10, 15, 20, 25, 21, 22, 23, 24])), !, checkAvailblePos(NewA).
 
 %move pawn : assert new et retract old
 moveOnBoard(Player, Pawn, ToA):- setOnBoard(Player, ToA), unsetOnBoard(Player, Pawn).

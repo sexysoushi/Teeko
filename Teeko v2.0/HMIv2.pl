@@ -95,12 +95,12 @@ clearBoard:- board([0, 0, 0, 0, 0,
 					]).
 
 % resetAll
-resetAll:- resetPlayerType, resetChoseAiLevel, clearBoard, cls.
+resetAll:- resetPlayerType, resetChoseAiLevel, clearBoard.
 
 /*----------------------------- BOARD DISPLAY -----------------------------------------*/
 
 % cls (clear screen): nettoyage de l'ecran
-cls:- put(27), put("["), put("2"), put("J").
+%cls:- put(27), put("["), put("2"), put("J").
 
 %display
 display:- board(L), writeln(L),
@@ -125,30 +125,30 @@ pawnOnThisCase(N, _, [_|R]):- N > 0, N1 is N - 1, pawnOnThisCase(N1, _, R).
 % Set of pawns, while all pawns are not set, nextPlayer, while nobody win
 set(Player):- writeln('set1'), not(stageTwo), nextPlayer(Player, NextPlayer), not(winner(NextPlayer)), !, playerType(Player, Type), set(Player, Type, NextPlayer).
 % If at the end of the stage 1 we have a winner -> end of the game
-set(Player):- writeln('set2'), nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
+set(Player):- writeln('set2'), nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinnerPlayer(NextPlayer).
 set(Player):- writeln('set3'), move(Player).
 % Player set a pawn, and turn to NextPlayer
-set(Player, 'human', NexPlayer):- writeln('set joueur humain'), addPosPawn(Player), writeln('PASSE PAR LA'), display, set(NextPlayer), !.
+set(Player, 'human', NextPlayer):- writeln('set joueur humain'), addPosPawn(Player), writeln('PASSE PAR LA'), display, set(NextPlayer), !.
 % AI set a pawn, and turn to Player
-set(Player, 'ai', NexPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), addOnList(Player, Pos), playerPawnList(Player, PawnPlayerList), writeln(PawnPlayerList), display, set(NexPlayer), !.
+set(Player, 'ai', NextPlayer):- write('Its my turn... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), addOnList(Player, Pos), playerPawnList(Player, PawnPlayerList), writeln(PawnPlayerList), display, set(NextPlayer), !.
 
 % addCoordPawn: add coordonates of each pawn
 addPosPawn(Player):- 
 		writeln('addPosPawn'), write(Player), write(', add a position on board such as "5.", "12." or "25." : '),
 		read(X), writeln(X), name(X, PosPawn), checkPos(Player, PosPawn, Pos), writeln(Pos), checkAvPos(Player, Pos), !.
-addPosPawn(Player):- nl, writeln(' Unavailable position. Try again !'), addPosPawn(Player).
+addPosPawn(Player):- nl, writeln(' Unavailable position. Try again !'), display,  addPosPawn(Player).
 
 % checkPos: check position add by the player				
-checkPos(Player, [A,B], PosNumber):- writeln('checkPos2'), A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1),
+checkPos(_, [A,B], PosNumber):- writeln('checkPos2'), A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1),
 							A1 == 1, between(0, 9, B1), !, atom_concat(A1, B1, PosAtom), atom_number(PosAtom, PosNumber), writeln(PosNumber). % check position add by the player from 10 to 19
-checkPos(Player, [A,B], PosNumber):- writeln('checkPos2'), A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1),
+checkPos(_, [A,B], PosNumber):- writeln('checkPos2'), A1 is A - 48, writeln(A1), B1 is B - 48, writeln(B1),
 							A1 == 2, between(0, 5, B1), !, atom_concat(A1, B1, PosAtom), atom_number(PosAtom, PosNumber), writeln(PosNumber). % check position add by the player from 20 to 25
-checkPos(Player, A, Pos):- writeln('checkPos2'), A1 is A - 48, writeln(A1), between(1, 9, A1), !,
+checkPos(_, A, Pos):- writeln('checkPos2'), A1 is A - 48, writeln(A1), between(1, 9, A1), !,
 							Pos is A1, writeln(Pos). % check position add by the player from 01 to 09
 checkPos(Player, _, _):- write('Error position. Try again ! (dont forget the . )'), addPosPawn(Player). % else return to addPosPawn
 
 
-checkAvPos(Player, Pos):- writeln('checkAvPos'), checkAvailblePos(Pos), !, writeln('PASSE PAR ICI'), writeln(Player), writeln(Pos), setOnBoard(Player, Pos).
+checkAvPos(Player, Pos):- writeln('checkAvPos'), checkAvailblePos(Pos), !, writeln('PASSE PAR ICI'), writeln(Player), writeln(Pos), setOnBoard(Player, Pos), addOnList(Player, Pos), writeln('coucou').
 
 % stageTwo: predicat allows stage 2 if all pawns are set on board.
 stageTwo:- writeln('stageTwo'), fullBoard(NbPawnOnBoard), NbPawnOnBoard == 8, !, not(winner('B')), not(winner('R')).
@@ -159,11 +159,11 @@ stageTwo:- writeln('stageTwo'), fullBoard(NbPawnOnBoard), NbPawnOnBoard == 8, !,
 % movePawn: select a pawn to move and move it
 move(Player):- nextPlayer(Player, NextPlayer), not(winner(NextPlayer)), !, playerType(Player, Type), move(Player, Type, NextPlayer).
 % If at the end of the stage 2 we have a winner -> end of the game
-move(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinner(NextPlayer, Type).
+move(Player):- nextPlayer(Player, NextPlayer), winner(NextPlayer), !, haveAWinnerPlayer(NextPlayer).
 % Player move a pawn, and turn to NextPlayer
 move(Player, 'human', NextPlayer):- movePawn(Player), display, move(NextPlayer), !.
 % AI move a pawn, and turn to Player
-move(Player, 'ai', NexPlayer):- player(Player, Name), write(Name), write('Its my turn, ok let me see... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), display, move(NexPlayer), !.
+move(Player, 'ai', NextPlayer):- player(Player, Name), write(Name), write('Its my turn, ok let me see... '), choseAiLevel(AiLevel), bestChange(Player, 3, AiLevel, Pos), setOnBoard(Player, Pos), display, move(NextPlayer), !.
 
 % movePawn
 movePawn(Player):- player(Player, Name), write(Name),
@@ -205,7 +205,9 @@ nextStep(Player, PawnTo, NewPos):- checkPawnPlayer(Player, PawnTo), !, checkPoss
 
 /*----------------------------- END OF GAME : haveAWinner -----------------------------------------*/
 
+haveAWinnerPlayer(Player):- playerType(Player, Type), haveAWinner(Player, Type).
+
 haveAWinner(Player, 'human'):- writeln(' We have a winner !!'), player(Player, Name), write(Name), writeln(' won this game !').
-haveAWinner(Player, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah ;)').
+haveAWinner(_, 'ai'):- writeln(' Haha sorry !! YOU LOSE. AI MACHINE is too Badass for you! Mouahahahah ;)').
 
 :- init. %begin with game initialisation 
